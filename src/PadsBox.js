@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 
-export default function PadsBox({ getCurrentSound }) {
+export default function PadsBox({ getCurrentSound, setPlayingState }) {
   const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const srcLink = {
     Q: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3",
@@ -21,17 +22,35 @@ export default function PadsBox({ getCurrentSound }) {
     getCurrentSound(soundName);
     const audio = audioRef.current;
     if (audio.paused || src !== audio.src) {
+      setIsPlaying(true);
+      
       audio.src = src;
       audio.currentTime = 0;
       audio.play();
+      audio.addEventListener("ended", () => {
+        setPlayingState(isPlaying);
+      });
     } else {
       audio.currentTime = 0;
+      if (audio.played.length > 0) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      setIsPlaying(true);
+      setPlayingState(isPlaying);
       audio.play();
+      audio.addEventListener("ended", () => {
+        setIsPlaying(false);
+        setPlayingState(isPlaying);
+      });
     }
   };
+  useEffect(() => {
+    setPlayingState(isPlaying);
+  }, [isPlaying, setPlayingState]);
 
   return (
-    <div className="container grid grid-cols-3 gap-2.5 gap-x-2  text-white">
+    <div className="container grid grid-cols-3 gap-3 gap-x-8  text-white">
       {Object.keys(srcLink).map((key) => (
         <Button
           text={key}
