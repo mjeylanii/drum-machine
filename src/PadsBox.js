@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 
-export default function PadsBox() {
-  const [activeButton, setActiveButton] = useState("");
+export default function PadsBox({ getCurrentSound }) {
   const audioRef = useRef(null);
+
   const srcLink = {
     Q: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3",
     W: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3",
@@ -16,33 +16,30 @@ export default function PadsBox() {
     C: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3",
   };
 
-  const playSound = (audioRef) => {
-    setActiveButton(audioRef.current.src);
-    audioRef.current.currentTime = 0;
-    audioRef.current.play();
+  const playSound = (audioRef, src) => {
+    const soundName = src.split("/").pop().slice(0, -4);
+    getCurrentSound(soundName);
+    const audio = audioRef.current;
+    if (audio.paused || src !== audio.src) {
+      audio.src = src;
+      audio.currentTime = 0;
+      audio.play();
+    } else {
+      audio.currentTime = 0;
+      audio.play();
+    }
   };
-  const handleKeyboard = (event, audioRef) => {
-    playSound(audioRef);
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyboard);
-    return () => {
-      document.removeEventListener("keydown", handleKeyboard);
-    };
-  }, []);
 
   return (
-    <div className="container grid grid-cols-3 gap-2.5 gap-x-0  text-white">
+    <div className="container grid grid-cols-3 gap-2.5 gap-x-2  text-white">
       {Object.keys(srcLink).map((key) => (
         <Button
           text={key}
           src={srcLink[key]}
           playSound={playSound}
-          handleKeyboard={handleKeyboard}
-          activeButton={activeButton}
           audioRef={audioRef}
           key={key}
+          dataKey={key} // add a data-key attribute to the button element
         />
       ))}
     </div>

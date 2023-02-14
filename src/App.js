@@ -1,7 +1,5 @@
-import logo from "./logo.svg";
 import "./App.css";
 import DrumBox from "./DrumBox";
-import Dropdown from "./Dropdown";
 
 function App() {
   return (
