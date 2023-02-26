@@ -23,7 +23,6 @@ export default function PadsBox({ getCurrentSound, setPlayingState }) {
     const audio = audioRef.current;
     if (audio.paused || src !== audio.src) {
       setIsPlaying(true);
-      
       audio.src = src;
       audio.currentTime = 0;
       audio.play();
